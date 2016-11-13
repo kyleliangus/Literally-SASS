@@ -5,6 +5,7 @@ from flask import Flask, request, redirect, g, render_template, url_for
 import requests
 import base64
 import urllib
+import random
 
 import os
 
@@ -220,7 +221,8 @@ def callback():
     
     query = authorization_query.copy()
     query['seed_genres'] = seed_genres
-    query['limit'] = 1;
+    limit = 5;
+    query['limit'] = limit;
     print query
 	
     recommendations_endpoint = "{}/recommendations".format(SPOTIFY_API_URL)
@@ -230,7 +232,7 @@ def callback():
 	
     
     # Combine profile and playlist data to display
-    display_arr = recommendations_data
+    display_arr = [recommendations_data['tracks'][random.randrange(0,limit)]['id']]
     return render_template("index.html",sorted_array=display_arr)
 
 if __name__ == "__main__":

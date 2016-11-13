@@ -54,3 +54,9 @@ body, html {
   top: 110px;
   left: 85px;
 }
+
+#player {
+  position: absolute;
+  top: 250px;
+  left: 50px;
+}
