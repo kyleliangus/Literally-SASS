@@ -26,12 +26,12 @@ def IBMAPI_Calls(f):
 
     x = json.dumps(stt.recognize(audio_file, content_type="audio/wav"), indent=2)
     parsed_json = json.loads(x)
-    #print parsed_json
+    #print (parsed_json)
     p = parsed_json['results'][0]['alternatives'][0]
     confidence = p['confidence']
     transcript = p['transcript']
-    print confidence
-    print transcript
+    print (confidence)
+    print (transcript)
 
     #transcript = "I hate gross scary jubilant crying planners that are certain #that they are unsure of sharing caring popular agreements anger."
 
@@ -42,7 +42,7 @@ def IBMAPI_Calls(f):
         version='2016-05-19')
     tone_values = json.dumps(tone_analyzer.tone(text=transcript), indent=2)
 
-    print tone_values
+    print (tone_values)
 
     parsed_tone_values = json.loads(tone_values)
     parsed = parsed_tone_values['document_tone']['tone_categories']
@@ -51,19 +51,19 @@ def IBMAPI_Calls(f):
     analytical, confident, tentative = language['tones'][0]['score'], language['tones'][1]['score'], language['tones'][2]['score']
     openness, conscientiousness, extraversion, agreeableness, emotional_range = social['tones'][0]['score'], social['tones'][1]['score'], social['tones'][2]['score'], social['tones'][3]['score'], social['tones'][4]['score']
 
-    print "Anger: " + str( anger )
-    print "Disgust: " + str( disgust )
-    print "Fear: " + str( fear )
-    print "Joy: " + str( joy )
-    print "Sadness: " + str( sadness )
-    print "Analytical: " + str( analytical )
-    print "Confident: " + str( confident )
-    print "Tentative: " + str( tentative )
-    print "Openness: " + str( openness )
-    print "Conscientiousness: " + str( conscientiousness )
-    print "Extraversion: " + str( extraversion )
-    print "Agreeableness: " + str( agreeableness )
-    print "Emotional Range: " + str( emotional_range )
+    print ("Anger: " + str( anger ))
+    print ("Disgust: " + str( disgust ))
+    print ("Fear: " + str( fear ))
+    print ("Joy: " + str( joy ))
+    print ("Sadness: " + str( sadness ))
+    print ("Analytical: " + str( analytical ))
+    print ("Confident: " + str( confident ))
+    print ("Tentative: " + str( tentative ))
+    print ("Openness: " + str( openness ))
+    print ("Conscientiousness: " + str( conscientiousness ))
+    print ("Extraversion: " + str( extraversion ))
+    print ("Agreeableness: " + str( agreeableness ))
+    print ("Emotional Range: " + str( emotional_range ))
 
     acousticness = max((openness + tentative - analytical) / 2, 0)
     danceability = (extraversion + joy + confident + openness) / 4
@@ -158,15 +158,63 @@ def callback():
     # Auth Step 6: Use the access token to access Spotify API
     authorization_header = {"Authorization":"Bearer {}".format(access_token)}
 	
-    genres = {'rap': 0, 'rock': 0, 'pop': 0, 'kpop': 0, 'r&b': 0, 'country': 0, 'latin': 0, 'dance': 0, 'classical': 0, 'jazz': 0]
+    genres = {'rap': 0, 'rock': 0, 'pop': 0, 'kpop': 0, 'r&b': 0, 'country': 0, 'latin': 0, 'dance': 0, 'classical': 0, 'jazz': 0}
 	# pick a subset on 4 criteria
-    genres['r&b'] += popularity * 7.5
+    # Based off of Popularity:
+    genres['r&b'] += popularity / 100 *       .75
+    genres['rock'] += popularity / 100 *      .75
+    genres['rap'] += popularity / 100 *       .75
+    genres['pop'] += popularity / 100 *       .75
+    genres['country'] += popularity / 100 *   .75
+    genres['latin'] += popularity / 100 *     .25
+    genres['dance'] += popularity / 100 *     .25
+    genres['kpop'] += popularity / 100 *      .25
+    genres['classical'] += popularity / 100 * .25
+    genres['jazz'] += popularity / 100 *      .25
+
+    # Based off of Speechiness:
+    genres['rap'] += speechiness *       .75
+    genres['rock'] += speechiness *      .75
+    genres['pop'] += speechiness *       .75
+    genres['kpop'] += speechiness *      .75
+    genres['country'] += speechiness *   .75
+    genres['latin'] += speechiness *     .25
+    genres['dance'] += speechiness *     .25
+    genres['r&b'] += speechiness *       .25
+    genres['classical'] += speechiness * .25
+    genres['jazz'] += speechiness *      .25
+
+    # Based off of Energy:
+    genres['pop'] += energy *       .75
+    genres['latin'] += energy *     .75
+    genres['kpop'] += energy *      .75
+    genres['dance'] += energy *     .75
+    genres['rap'] += energy *       .75
+    genres['rock'] += energy *      .25
+    genres['classical'] += energy * .25
+    genres['r&b'] += energy *       .25
+    genres['country'] += energy *   .25
+    genres['jazz'] += energy *      .25
+
+    # Based off of Acoustic:
+    genres['pop'] += acousticness *       .25
+    genres['latin'] += acousticness *     .25
+    genres['kpop'] += acousticness *      .25
+    genres['dance'] += acousticness *     .25
+    genres['rap'] += acousticness *       .25
+    genres['rock'] += acousticness *      .75
+    genres['classical'] += acousticness * .75
+    genres['r&b'] += acousticness *       .75
+    genres['country'] += acousticness *   .75
+    genres['jazz'] += acousticness *      .75
+
+    top_3 = sorted(genres, key = genres.__getitem__)[:3]
+    print (top_3)
     
-	
     recommendations_endpoint = "{}/recommendations".format(SPOTIFY_API_URL)
     recommendations_response = requests.get(recommendations_endpoint, params=authorization_query, headers=authorization_header)
     recommendations_data = json.loads(recommendations_response.text)
-    print recommendations_data
+    print (recommendations_data)
 	
     
     # Combine profile and playlist data to display
