@@ -80,10 +80,11 @@ def IBMAPI_Calls(f):
 
 # call spotify API and start server
 
-UPLOAD_FOLDER = '/uploads'
-ALLOWED_EXTENSIONS = set(['m4a', 'wav', 'ogg'])
+UPLOAD_FOLDER = '\uploads'
+ALLOWED_EXTENSIONS = set(['m4a', 'wav', 'ogg', 'mp3'])
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Client Keys
 CLIENT_ID = "70dc78caa32648ac80b0c4b28694a522"
 CLIENT_SECRET = "0ca785fef2ca4031b1558cebb465bec4"
@@ -126,10 +127,15 @@ def index():
 	
 @app.route("/start", methods=['POST'])
 def receive():
+    print "I heard something"
     error = None
     f = request.files['speech']
-    os.system(".\ffmpeg.exe " + f.toString() +  )
     if( f ):
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        x = filename.split(".")
+        os.system(".\ffmpeg.exe -i " + filename + " " + x + ".wav"  )
+		
         IBMAPI_Calls( f )
         index()
     else:
