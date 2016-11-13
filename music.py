@@ -35,7 +35,7 @@ parsed = parsed_tone_values['document_tone']['tone_categories']
 emotion, language, social = parsed[0], parsed[1], parsed[2]
 anger, disgust, fear, joy, sadness = emotion['tones'][0]['score'], emotion['tones'][1]['score'], emotion['tones'][2]['score'], emotion['tones'][3]['score'], emotion['tones'][4]['score']
 analytical, confident, tentative = language['tones'][0]['score'], language['tones'][1]['score'], language['tones'][2]['score']
-openness, conscient, extraversion, agree, range = social['tones'][0]['score'], social['tones'][1]['score'], social['tones'][2]['score'], social['tones'][3]['score'], social['tones'][4]['score']
+openness, conscientiousness, extraversion, agreeableness, emotional_range = social['tones'][0]['score'], social['tones'][1]['score'], social['tones'][2]['score'], social['tones'][3]['score'], social['tones'][4]['score']
 
 '''
 print "Emotion: "
@@ -55,8 +55,16 @@ print "Analytical: " + str( analytical )
 print "Confident: " + str( confident )
 print "Tentative: " + str( tentative )
 print "Openness: " + str( openness )
-print "Conscient: " + str( conscient )
+print "Conscientiousness: " + str( conscientiousness )
 print "Extraversion: " + str( extraversion )
-print "Agree: " + str( agree )
-print "Emotional Range: " + str( range )
+print "Agreeableness: " + str( agreeableness )
+print "Emotional Range: " + str( emotional_range )
 
+
+liveness = (confident + disgust + extraversion) / 3
+loudness = (anger + fear) / 2
+mode = 
+popularity = (extraversion + agreeableness) / 2
+speechiness = max((extraversion + openness - sadness) / 2, 0)
+tempo = (anger + fear) / 2
+valence = max((joy + confident + extraversion - anger - sadness) / 3, 0)
