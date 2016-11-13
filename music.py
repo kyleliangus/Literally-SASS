@@ -16,8 +16,6 @@ import urllib
 
 
 # turn .wav file to text
-
-'''
 def IBMAPI_Calls(f):
     
     stt = SpeechToTextV1(username="a3e9a6ce-11f9-43d5-9a0f-05cf198e3359", password="OeGWjpdyhATb")
@@ -85,7 +83,7 @@ def IBMAPI_Calls(f):
 	authorization_query = {'target_acousticness':acousticness, 'target_liveness': liveness, 'target_loudness': loudness, 'target_tempo': tempo, 'target_speechiness': speechiness, 'target_instrumentalness': instrumentalness, 'target_valence': valence, 'target_popularity': popularity, 'target_energy': energy, 'target_danceability': danceability, 'target_mode' = mode }
     return authorization_query
 	
-'''
+
 # call spotify API
 
 app = Flask(__name__)
@@ -123,21 +121,26 @@ def index():
     # Auth Step 1: Authorization
     url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
     auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
-    return redirect(auth_url)
+    return redirect(url_for(auth_url,speech=request.args.get('speech'))
 
-'''
-@app.route('/login', methods=['POST'])
+
+@app.route('/start', methods=['POST'])
 def receive():
     error = None
     f = request.files['speech']
     if( f ):
-        IBMAPI_Calls( f )
+        speech = IBMAPI_Calls( f )
+		return redirect(url_for('', speech=speech))
     else:
-'''
+		error = 'No audio file detected'
+		return render_template('index.html', error=error)
+	
     
 @app.route("/callback/q")
 def callback():
     # Auth Step 4: Requests refresh and access tokens
+	authorization_query = request.args.get('speech')
+	
     auth_token = request.args['code']
     code_payload = {
         "grant_type": "authorization_code",
@@ -158,13 +161,14 @@ def callback():
     # Auth Step 6: Use the access token to access Spotify API
     authorization_header = {"Authorization":"Bearer {}".format(access_token)}
 	
-    genres = {'rap': 0, 'rock': 0, 'pop': 0, 'kpop': 0, 'r&b': 0, 'country': 0, 'latin': 0, 'dance': 0, 'classical': 0, 'jazz': 0]
+    seed_genres = {'rap': 0, 'rock': 0, 'pop': 0, 'kpop': 0, 'r&b': 0, 'country': 0, 'latin': 0, 'dance': 0, 'classical': 0, 'jazz': 0]
 	# pick a subset on 4 criteria
-    genres['r&b'] += popularity * 7.5
-    
+    #genres['r&b'] += popularity * 7.5
+    query = seed_genres.copy()
+	query.update(authorization_query)
 	
     recommendations_endpoint = "{}/recommendations".format(SPOTIFY_API_URL)
-    recommendations_response = requests.get(recommendations_endpoint, params=authorization_query, headers=authorization_header)
+    recommendations_response = requests.get(recommendations_endpoint, params=query, headers=authorization_header)
     recommendations_data = json.loads(recommendations_response.text)
     print recommendations_data
 	
