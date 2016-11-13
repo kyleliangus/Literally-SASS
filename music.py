@@ -3,7 +3,7 @@ import json
 import re
 
 # turn .wav file to text
-'''
+
 stt = SpeechToTextV1(username="a3e9a6ce-11f9-43d5-9a0f-05cf198e3359", password="OeGWjpdyhATb")
 
 audio_file = open("test1.wav", "rb")
@@ -16,10 +16,10 @@ confidence = p['confidence']
 transcript = p['transcript']
 print confidence
 print transcript
+
 '''
-
 transcript = "I hate gross scary jubilant crying planners that are certain that they are unsure of sharing caring popular agreements anger."
-
+'''
 tone_analyzer = ToneAnalyzerV3(
    username='18fe4961-f3ca-443c-981e-98cfa020e723',
    password='wA1ikph1pFiT',
@@ -35,7 +35,7 @@ parsed = parsed_tone_values['document_tone']['tone_categories']
 emotion, language, social = parsed[0], parsed[1], parsed[2]
 anger, disgust, fear, joy, sadness = emotion['tones'][0]['score'], emotion['tones'][1]['score'], emotion['tones'][2]['score'], emotion['tones'][3]['score'], emotion['tones'][4]['score']
 analytical, confident, tentative = language['tones'][0]['score'], language['tones'][1]['score'], language['tones'][2]['score']
-openness, conscient, extraversion, agree, range = social['tones'][0]['score'], social['tones'][1]['score'], social['tones'][2]['score'], social['tones'][3]['score'], social['tones'][4]['score']
+openness, conscientiousness, extraversion, agree, range = social['tones'][0]['score'], social['tones'][1]['score'], social['tones'][2]['score'], social['tones'][3]['score'], social['tones'][4]['score']
 
 '''
 print "Emotion: "
@@ -55,8 +55,12 @@ print "Analytical: " + str( analytical )
 print "Confident: " + str( confident )
 print "Tentative: " + str( tentative )
 print "Openness: " + str( openness )
-print "Conscient: " + str( conscient )
+print "Conscient: " + str( conscientiousness )
 print "Extraversion: " + str( extraversion )
 print "Agree: " + str( agree )
 print "Emotional Range: " + str( range )
 
+accoustic = max( (openness + tentative - analytical) / 2, 0 )
+danceability = max( (extraversion + joy + confident + openness)/4, 0 )
+energy = max( (extraversion + joy + range - tentative )/3, 0 )
+instrumentalness = max( (sadness + tentative)/2, 0 )
