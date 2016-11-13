@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
   $("#submit").click(function() {
-    var url = "sample-url.php";
+    var url = "10.142.175.48";
     var params = "lorem=ipsum&name=alpha";
     var xhr = new XMLHttpRequest();
     xhr.open("POST", url, true);
@@ -11,5 +11,7 @@ $(document).ready(function() {
 
     xhr.send(params);
   });
+
+
 
 })
