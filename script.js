@@ -10,6 +10,6 @@ $(document).ready(function() {
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
     xhr.send(params);
-  })
+  });
 
 })
